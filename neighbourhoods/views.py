@@ -1,22 +1,34 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-from .models import Neighbourhood
-from .forms import NeighbourhoodForm
+from .models import Neighbourhood,Post,Contact
+from .forms import NeighbourhoodForm, ContactForm, PostForm
 
 # Create your views here.
 
 def home(request):
+    neighbourhood = request.user.profile.neighbourhood
+    posts = Post.objects.filter(neighbourhood=neighbourhood)
+    contacts = Contact.objects.filter(neighbourhood=neighbourhood)
     
-    return render(request, 'neighbourhoods/home.html')
+    context = {
+        'posts': posts,
+        'contacts': contacts,
+        'form': PostForm(),
+    }
+
+    return render(request, 'neighbourhoods/home.html',context)
 
 def businessList(request):
     return render(request, 'neighbourhoods/business-list.html')
 
 def neighbourhoodList(request):
-    form = NeighbourhoodForm()
-    neighbourhoods = Neighbourhood.objects.all()
-    return render(request, 'neighbourhoods/neighbourhood-list.html',{'neighbourhoods':neighbourhoods, 'form':form})
+    context={
+        'addNeighbourhoodForm': NeighbourhoodForm(),
+        'neighbourhoods': Neighbourhood.objects.all(),
+        'addContactForm': ContactForm(),
+    }
+    return render(request, 'neighbourhoods/neighbourhood-list.html',context)
 
 def addNeighbourhood(request):
     form = NeighbourhoodForm()
@@ -27,10 +39,44 @@ def addNeighbourhood(request):
             neighbourhood.owner = request.user
             neighbourhood.save()
 
-            messages.success(request, 'Neighbourhood add successfully!')
+            messages.success(request, 'Neighbourhood added successfully!')
 
         else:
             messages.success(
                 request, 'An error has occurred!')
     
     return redirect('neighbourhood-list')
+
+def addContact(request):
+    form = ContactForm
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            contact = form.save(commit=False)
+            contact.neighbourhood = request.user.profile.neighbourhood
+            contact.save()
+
+            messages.success(request, 'Contact added successfully!')
+
+        else:
+            messages.success(
+                request, 'An error has occurred!')
+    
+    return redirect('neighbourhood-list')
+
+def addPost(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.owner = request.user
+            post.neighbourhood = request.user.profile.neighbourhood
+            post.save()
+
+            messages.success(request, 'Post added successfully!')
+
+        else:
+            messages.success(
+                request, 'An error has occurred!')
+    
+    return redirect('home')
