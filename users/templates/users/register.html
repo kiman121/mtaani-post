@@ -1,0 +1,37 @@
+{% extends 'base.html' %} {% block content %}{% load widget_tweaks %}
+<div class="account-content">
+  <div class="container">
+    <div class="account-logo">
+      <a href="index.html"
+        ><img src="assets/img/logo2.png" alt="Dreamguy's Technologies"
+      /></a>
+    </div>
+    <div class="account-box">
+      <div class="account-wrapper">
+        <h3 class="account-title">Register</h3>
+        <form action="{% url 'register-user' %}" method="POST">
+          {% csrf_token %} {% for field in form %}
+          <div class="form-group">
+            <label>{{field.label}}</label>
+            {{field}} {% for error in field.errors %}
+            <p style="color: red">{{error}}</p>
+            {% endfor %}
+          </div>
+          {% endfor %}
+
+          <div class="form-group text-center">
+            <button class="btn btn-primary account-btn" type="submit">
+              Register
+            </button>
+          </div>
+          <div class="account-footer">
+            <p>
+              Already have an account? <a href="{% url 'login' %}">Login</a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
