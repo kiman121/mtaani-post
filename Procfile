@@ -1,1 +1,1 @@
-web: gunicorn msdevelopers.wsgi --log-file -
+web: gunicorn mtaanipost.wsgi --log-file -

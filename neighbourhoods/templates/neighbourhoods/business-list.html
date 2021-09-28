@@ -1,0 +1,91 @@
+{% extends 'base.html' %} {% block content %}
+<div class="page-wrapper">
+  <div class="content container">
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h3 class="page-title">Businesses</h3>
+          <ul class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="{% url 'home' %}">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active">Businesses</li>
+          </ul>
+        </div>
+        <div class="col-auto float-right ml-auto">
+          <a
+            href="#"
+            class="btn add-btn"
+            data-toggle="modal"
+            data-target="#add_business"
+            ><i class="fa fa-plus"></i> Add Business</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      {% for business in businesses %}
+      <div class="col-md-6">
+        <a class="job-list" href="#">
+          <div class="job-list-det">
+            <div class="job-list-desc">
+              <h3 class="job-list-title">{{business.name}}</h3>
+              <h4 class="job-department">
+                Posted by: {{business.owner.profile.first_name}}
+              </h4>
+            </div>
+          </div>
+          <div class="job-list-footer">
+            <ul>
+              <li>
+                <i class="fa fa-map-signs"></i> {{business.neighbourhood}}
+              </li>
+              <li><i class="fa fa-clock-o"></i> {{business.created}}</li>
+            </ul>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<div id="add_business" class="modal custom-modal fade" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Business</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'add-business' %}" method="POST">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Name</label>
+                {{form.name}}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Email</label>
+                {{form.email}}
+              </div>
+            </div>
+          </div>
+          <div class="submit-section">
+            <button class="btn btn-primary submit-btn">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

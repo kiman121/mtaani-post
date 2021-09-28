@@ -3,6 +3,7 @@ from django.contrib.auth import login,authenticate,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 
 from .forms import CustomUserCreationForm, ProfileForm
 from .models import Profile
@@ -53,17 +54,33 @@ def registerUser(request):
     return render(request, 'users/register.html', {'form':form})
 
 @login_required(login_url='login')
-def editProfile(request):
-    profile = request.user.profile
+def editProfile(request, pk):
+    profile = Profile.objects.get(id=pk)
     form = ProfileForm(instance=profile)
-
+    print('outside')
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
+        print('out')
         if form.is_valid():
+            print('in')
             form.save()
-            return redirect('profile')
 
-    return render(request, 'users/profile.html', {'form':form})
+    return redirect(request.GET['next'] if 'next' in request.GET else 'profile')
+
+@login_required(login_url='login')
+def getProfile(request, pk):
+    profile = Profile.objects.get(id=pk)
+
+    data = {
+        'first_name': profile.first_name,
+        'other_name': profile.other_name,
+        'email': profile.email,
+        'phone_number': profile.phone_number,
+        'username':profile.username,
+        'user_type':profile.user_type,
+        'neighbourhood':profile.neighbourhood.id,
+    }
+    return JsonResponse(data)
 
 
 def logoutUser(request):

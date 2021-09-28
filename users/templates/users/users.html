@@ -1,0 +1,230 @@
+{% extends 'base.html' %} {% block content %}
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h3 class="page-title">Users</h3>
+          <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Users</li>
+          </ul>
+        </div>
+        <div class="col-auto float-right ml-auto">
+          <a
+            href="#"
+            class="btn add-btn"
+            data-toggle="modal"
+            data-target="#add_user"
+            ><i class="fa fa-plus"></i> New Admin</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table class="table table-striped custom-table datatable" id="users_table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Other Names</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Neighbourhood</th>
+                <th>Role</th>
+                <th class="text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for profile in profiles %}
+              <tr>
+                <td>
+                  <h2 class="table-avatar">
+                    <a href="profile.html" class="avatar"
+                      ><img src="{{profile.profile_image.url}}" alt=""
+                    /></a>
+                    <a href="profile.html"
+                      >{{profile.first_name}}
+                      <span>{{profile.user_type}}</span></a
+                    >
+                  </h2>
+                </td>
+                <td>{{profile.other_name}}</td>
+                <td>{{profile.email}}</td>
+                <td>{{profile.phone_number}}</td>
+                <td>{{profile.neighbourhood}}</td>
+                <td>
+                  {% if profile.user_type == 'admin' %}
+                  <span class="badge bg-inverse-danger">
+                  {% else %}
+                  <span class="badge bg-inverse-info">
+                  {% endif %}
+                    {{profile.user_type}}</span
+                  
+                  Client</span>
+                  
+                </td>
+                <td class="text-right">
+                  <div class="dropdown dropdown-action">
+                    <a
+                      href="#"
+                      class="action-icon dropdown-toggle"
+                      data-toggle="dropdown"
+                      aria-expanded="false"
+                      ><i class="material-icons">more_vert</i></a
+                    >
+                    <div data-userid="{{profile.id}}" class="dropdown-menu dropdown-menu-right edit-delete-user">
+                      <a 
+                        data-userid="{{profile.id}}"
+                        class="dropdown-item admin-edit-user"
+                        href="#"
+                        data-toggle="modal"
+                        data-target="#edit_user"
+                        ><i class="fa fa-pencil m-r-5"></i> Edit</a
+                      >
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        data-toggle="modal"
+                        data-target="#delete_user"
+                        ><i class="fa fa-trash-o m-r-5"></i> Delete</a
+                      >
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="edit_user_profile" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Profile Information</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form
+            action=""
+            method="POST"
+            enctype="multipart/form-data"
+          >
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>First Name</label>
+                      {{form.first_name}}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Other Names</label>
+                      {{form.other_name}}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Username</label>
+                      {{form.username}}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Phone Number</label>
+                      {{form.phone_number}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Email</label>
+                  {{form.email}}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>User Type</label>
+                  {{form.user_type}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label
+                    >Neighbourhood <span class="text-danger">*</span></label
+                  >
+                  {{form.neighbourhood}}
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Profile Photo</label>
+                  {{form.profile_image}}
+                </div>
+              </div>
+            </div>
+            <div class="submit-section">
+              <button class="btn btn-primary submit-btn">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete User Modal -->
+  <div class="modal custom-modal fade" id="delete_user" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-header">
+            <h3>Delete User</h3>
+            <p>Are you sure want to delete?</p>
+          </div>
+          <div class="modal-btn delete-action">
+            <div class="row">
+              <div class="col-6">
+                <a
+                  href="javascript:void(0);"
+                  class="btn btn-primary continue-btn"
+                  >Delete</a
+                >
+              </div>
+              <div class="col-6">
+                <a
+                  href="javascript:void(0);"
+                  data-dismiss="modal"
+                  class="btn btn-primary cancel-btn"
+                  >Cancel</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Delete User Modal -->
+</div>
+{% endblock content %}

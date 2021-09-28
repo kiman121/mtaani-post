@@ -18,9 +18,9 @@ class Profile(models.Model):
     email = models.EmailField(max_length=500, blank=True, null=True)
     phone_number = models.CharField(max_length=200, blank=True, null=True)
     username = models.CharField(max_length=200, blank=True, null=True)
-    user_type =models.CharField(max_length=200, choices=SYSTEM_USERS)
+    user_type =models.CharField(max_length=200, choices=SYSTEM_USERS, default='user',blank=True, null=True,)
     neighbourhood = models.ForeignKey(
-        Neighbourhood, on_delete=models.CASCADE, null=True)
+        Neighbourhood, on_delete=models.SET_NULL, null=True)
     profile_image = models.ImageField(
         blank=True, null=True, upload_to='profiles/', default='profiles/user-default.png')
     created = models.DateTimeField(auto_now_add=True)

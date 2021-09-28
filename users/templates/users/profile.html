@@ -54,7 +54,7 @@
                         <div class="text">{{user.profile.username}}</div>
                       </li>
                       <li>
-                        <div class="title">Neighbourhood:</div>
+                        <div class="title">Hood:</div>
                         <div class="text">{{user.profile.neighbourhood}}</div>
                       </li>
                       <li>
@@ -96,7 +96,7 @@
         </div>
         <div class="modal-body">
           <form
-            action="{% url 'edit-user'%}"
+            action="{% url 'edit-user' user.profile.id %}?next={{request.path}}"
             method="POST"
             enctype="multipart/form-data"
           >
