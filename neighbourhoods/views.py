@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-from .models import Neighbourhood,Post,Contact
-from .forms import NeighbourhoodForm, ContactForm, PostForm
+from .models import Neighbourhood,Post,Contact, Business
+from .forms import NeighbourhoodForm, ContactForm, PostForm, BusinessForm
 
 # Create your views here.
 
@@ -20,7 +20,15 @@ def home(request):
     return render(request, 'neighbourhoods/home.html',context)
 
 def businessList(request):
-    return render(request, 'neighbourhoods/business-list.html')
+    form = BusinessForm()
+    neighbourhood = request.user.profile.neighbourhood
+    businesses = Business.objects.filter(neighbourhood=neighbourhood)
+
+    context={
+        'form':form,
+        'businesses':businesses,
+    }
+    return render(request, 'neighbourhoods/business-list.html', context)
 
 def neighbourhoodList(request):
     context={
@@ -80,3 +88,21 @@ def addPost(request):
                 request, 'An error has occurred!')
     
     return redirect('home')
+
+
+def addBusiness(request):
+    if request.method == 'POST':
+        form = BusinessForm(request.POST)
+        if form.is_valid():
+                business = form.save(commit=False)
+                business.owner = request.user
+                business.neighbourhood = request.user.profile.neighbourhood
+                business.save()
+
+                messages.success(request, 'Business added successfully!')
+
+        else:
+            messages.success(
+                request, 'An error has occurred!')
+    
+    return redirect('business-list')
