@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django.contrib.auth.models import User
-from .models import Neighbourhood, Contact, Post
+from .models import Neighbourhood, Contact, Post, Business
 
 class NeighbourhoodForm(ModelForm):
 
@@ -38,6 +38,18 @@ class PostForm(ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
+        
+        
+        for name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'form-control'})
+
+class BusinessForm(ModelForm):
+    class Meta:
+        model = Business
+        fields = {'name','email'}
+        
+    def __init__(self, *args, **kwargs):
+        super(BusinessForm, self).__init__(*args, **kwargs)
         
         
         for name, field in self.fields.items():
