@@ -1,6 +1,4 @@
-# MoringaDevs Web Application
-
-#### A developer's app.
+# Mtaani post Web Application
 
 #### By **Patrick Mwangangi**
 
@@ -12,7 +10,7 @@ Further to the above usage, this master piece was created as practice on concept
 
 ## Demo
 
-Here is a working live demo : https://erp-moringa-devs.herokuapp.com/
+Here is a working live demo : https://mtaanipost.herokuapp.com/
 
 ## Setup/Installaction Requirements
 
