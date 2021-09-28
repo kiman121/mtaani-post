@@ -8,4 +8,5 @@ urlpatterns = [
     path('add-neighbourhood/', views.addNeighbourhood, name='add-neighbourhood'),
     path('add-contact/', views.addContact, name='add-contact'),
     path('add-post/', views.addPost, name='add-post'),
+    path('add-business/', views.addBusiness, name='add-business'),
 ]
