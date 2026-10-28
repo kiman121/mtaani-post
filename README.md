@@ -1,6 +1,6 @@
 # Mtaani Post
 
-Django app for a neighbourhood: residents, posts, contacts, and businesses. I built it in 2021 while learning Django. It is the public sample for the Django and PostgreSQL line on my profile. The court-data pipelines are a different job and stay in the client repository.
+Django app for a neighbourhood: residents, posts, contacts, and businesses. I built it in 2021 while learning Django. The screens are a server-rendered layout: a feed, businesses, neighbourhoods, and a profile. It is the public sample for the Django line on my profile. The court-data pipelines are a different job and stay in the client repository.
 
 A test creates a user, a neighbourhood, and one announcement, and checks that the post is stored on that neighbourhood. Signup also creates a profile and a welcome email.
 
@@ -11,9 +11,10 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python manage.py test
+python manage.py runserver
 ```
 
-The test uses SQLite. No `.env` file is required.
+Open http://127.0.0.1:8000, create an account, add a neighbourhood, then join it from your profile. The test uses SQLite. No `.env` file is required. The old Heroku address no longer serves this app.
 
 ## PostgreSQL
 

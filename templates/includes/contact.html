@@ -1,0 +1,9 @@
+<article class="contact">
+  <h4>{{ contact.name }}</h4>
+  {% if contact.location %}<p>{{ contact.location }}</p>{% endif %}
+  <p class="meta">
+    {% if contact.phone_number %}<a href="tel:{{ contact.phone_number }}">{{ contact.phone_number }}</a>{% endif %}
+    {% if contact.phone_number and contact.email %} · {% endif %}
+    {% if contact.email %}<a href="mailto:{{ contact.email }}">{{ contact.email }}</a>{% endif %}
+  </p>
+</article>

@@ -1,129 +1,72 @@
-{% extends 'base.html' %} {% block content %}
-<div class="page-wrapper">
-  <div class="content container">
-    <div class="page-header">
-      <div class="row align-items-center">
-        <div class="col">
-          <h3 class="page-title">News feed</h3>
-          <ul class="breadcrumb">
-            <li class="breadcrumb-item">
-              <a href="{% url 'home' %}">Dashboard</a>
-            </li>
-            <li class="breadcrumb-item active">News feed</li>
-          </ul>
-        </div>
-        <div class="col-auto float-right ml-auto">
-          <a
-            href="#"
-            class="btn add-btn"
-            data-toggle="modal"
-            data-target="#add_post"
-            ><i class="fa fa-plus"></i> New Post</a
-          >
-        </div>
-      </div>
+{% extends "base.html" %}
+{% block title %}Feed · Mtaani{% endblock %}
+{% block content %}
+<div class="page">
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Feed</p>
+      <h1>{% if neighbourhood %}{{ neighbourhood.name }}{% else %}Your feed{% endif %}</h1>
+      <p class="lede">
+        {% if neighbourhood %}
+        Notices and contacts for {{ neighbourhood.location }}.
+        {% else %}
+        Choose a neighbourhood on your profile to see its notices.
+        {% endif %}
+      </p>
     </div>
-    <div class="row">
-      <div class="col-md-8">
+  </header>
+
+  {% if not neighbourhood %}
+  <p class="banner">You are not in a neighbourhood yet. <a href="{% url 'profile' %}">Choose one on your profile</a>.</p>
+  {% endif %}
+
+  <div class="split">
+    <section class="stack" aria-labelledby="notices-title">
+      {% if neighbourhood %}
+      <form class="panel" method="post" action="{% url 'home' %}">
+        {% csrf_token %}
+        <h2>Write a notice</h2>
+        {% include "includes/fields.html" %}
+        <button class="button" type="submit">Post notice</button>
+      </form>
+      {% endif %}
+
+      <div>
+        <h2 id="notices-title" class="section-label">Notices</h2>
         {% for post in posts %}
-        <div class="job-info job-widget">
-          <h3 class="job-title">{{post.title}}</h3>
-          <ul class="job-post-det">
-            <li>
-              <i class="fa fa-calendar"></i> Post Date:
-              <span class="text-blue">{{post.created}}</span>
-            </li>
-            <li>
-              <i class="fa fa-user-o"></i> Posted by:
-              <span class="text-blue">{{post.owner.profile.first_name}}</span>
-            </li>
-          </ul>
-          <hr />
-          <div class="job-description">
-            <p>{{post.description}}</p>
-          </div>
-        </div>
+        <article class="card">
+          <p class="eyebrow">{{ post.get_post_type_display }}</p>
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.description }}</p>
+          <p class="meta">
+            {% if post.owner %}{{ post.owner.profile.first_name|default:post.owner.username }} · {% endif %}{{ post.created|date:"j M Y" }}
+          </p>
+        </article>
+        {% empty %}
+        <p class="empty">No notices in this neighbourhood yet.</p>
         {% endfor %}
       </div>
+    </section>
 
-      <div class="col-md-4">
-        <div class="job-det-info job-widget">
-          <div class="info-list">
-            <span><i class="fa fa-map-signs"></i></span>
-            <h5>Health Facilities</h5>
-            {% for contact in contacts %} {% if contact.category == 'health' %}
-            <p>
-              {{contact.name}} <br />
-              {{contact.email}}, <br />
-              {{contact.phone_number}}, <br />
-              {{contact.location}}
-            </p>
-            <hr />
-            {% endif %} {% endfor %}
-
-            <span><i class="fa fa-map-signs"></i></span>
-            <h5>Security Organs</h5>
-            {% for contact in contacts %} {% if contact.category == 'security'%}
-            <p>
-              {{contact.name}} <br />
-              {{contact.email}}, <br />
-              {{contact.phone_number}}, <br />
-              {{contact.location}}
-            </p>
-            <hr />
-            {% endif %} {% endfor %}
-          </div>
-        </div>
-      </div>
-    </div>
+    <aside class="stack" aria-labelledby="contacts-title">
+      <h2 id="contacts-title" class="section-label">Useful contacts</h2>
+      <section class="panel">
+        <h3>Health</h3>
+        {% for contact in health_contacts %}
+        {% include "includes/contact.html" %}
+        {% empty %}
+        <p class="empty">No health contacts yet.</p>
+        {% endfor %}
+      </section>
+      <section class="panel">
+        <h3>Security</h3>
+        {% for contact in security_contacts %}
+        {% include "includes/contact.html" %}
+        {% empty %}
+        <p class="empty">No security contacts yet.</p>
+        {% endfor %}
+      </section>
+    </aside>
   </div>
 </div>
-<div id="add_post" class="modal custom-modal fade" role="dialog">
-  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Add New Post</h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form action="{% url 'add-post' %}" method="POST">
-          {% csrf_token %}
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Post Type</label>
-                {{form.post_type}}
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Title</label>
-                {{form.title}}
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label>Description</label>
-                {{form.description}}
-              </div>
-            </div>
-          </div>
-          <div class="submit-section">
-            <button class="btn btn-primary submit-btn">Submit</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-{% endblock content %}
+{% endblock %}

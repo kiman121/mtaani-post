@@ -1,140 +1,126 @@
-from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.db.models import Count
+from django.shortcuts import redirect, render
 
-from .models import Neighbourhood,Post,Contact, Business
-from .forms import NeighbourhoodForm, ContactForm, PostForm, BusinessForm
+from .forms import BusinessForm, ContactForm, NeighbourhoodForm, PostForm
+from .models import Business, Contact, Neighbourhood, Post
 
-# Create your views here.
-@login_required(login_url='login')
+
+def _neighbourhood(user):
+    return user.profile.neighbourhood
+
+
+@login_required
 def home(request):
-    neighbourhood = request.user.profile.neighbourhood
-    posts = Post.objects.filter(neighbourhood=neighbourhood)
-    contacts = Contact.objects.filter(neighbourhood=neighbourhood)
-    
-    context = {
-        'posts': posts,
-        'contacts': contacts,
-        'form': PostForm(),
-    }
+    neighbourhood = _neighbourhood(request.user)
+    form = PostForm()
 
-    return render(request, 'neighbourhoods/home.html',context)
-
-@login_required(login_url='login')
-def businessList(request):
-    form = BusinessForm()
-    neighbourhood = request.user.profile.neighbourhood
-    businesses = Business.objects.filter(neighbourhood=neighbourhood)
-
-    context={
-        'form':form,
-        'businesses':businesses,
-    }
-    return render(request, 'neighbourhoods/business-list.html', context)
-
-@login_required(login_url='login')
-def neighbourhoodList(request):
-    context={
-        'addNeighbourhoodForm': NeighbourhoodForm(),
-        'neighbourhoods': Neighbourhood.objects.all(),
-        'addContactForm': ContactForm(),
-    }
-    return render(request, 'neighbourhoods/neighbourhood-list.html',context)
-
-@login_required(login_url='login')
-def addNeighbourhood(request):
-    form = NeighbourhoodForm()
-    if request.method == 'POST':
-        form = NeighbourhoodForm(request.POST)
-        if form.is_valid():
-            neighbourhood = form.save(commit=False)
-            neighbourhood.owner = request.user
-            neighbourhood.save()
-
-            messages.success(request, 'Neighbourhood added successfully!')
-
-        else:
-            messages.success(
-                request, 'An error has occurred!')
-    
-    return redirect('neighbourhood-list')
-
-
-# @login_required(login_url='login')
-# def editProfile(request):
-#     profile = request.user.profile
-#     form = ProfileForm(instance=profile)
-    
-#     if request.method == 'POST':
-#         form = ProfileForm(request.POST, request.FILES, instance=profile)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('profile')
-
-#     return render(request, 'users/profile.html', {'form':form})
-
-@login_required(login_url='login')
-def getNeighbourhood(request, pk):
-    neighbourhood = Neighbourhood.objects.get(id=pk)
-
-    data = {
-        'name': neighbourhood.name,
-        'location': neighbourhood.location,
-    }
-    return JsonResponse(data)
-
-
-@login_required(login_url='login')
-def addContact(request):
-    form = ContactForm
-    if request.method == 'POST':
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            contact = form.save(commit=False)
-            contact.neighbourhood = request.user.profile.neighbourhood
-            contact.save()
-
-            messages.success(request, 'Contact added successfully!')
-
-        else:
-            messages.success(
-                request, 'An error has occurred!')
-    
-    return redirect('neighbourhood-list')
-
-@login_required(login_url='login')
-def addPost(request):
-    if request.method == 'POST':
+    if request.method == "POST":
+        if neighbourhood is None:
+            messages.error(request, "Choose a neighbourhood on your profile before posting.")
+            return redirect("profile")
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
             post.owner = request.user
-            post.neighbourhood = request.user.profile.neighbourhood
+            post.neighbourhood = neighbourhood
             post.save()
+            messages.success(request, "Notice posted.")
+            return redirect("home")
 
-            messages.success(request, 'Post added successfully!')
+    if neighbourhood is None:
+        posts = Post.objects.none()
+        contacts = Contact.objects.none()
+    else:
+        posts = Post.objects.filter(neighbourhood=neighbourhood).select_related("owner__profile")
+        contacts = Contact.objects.filter(neighbourhood=neighbourhood)
 
-        else:
-            messages.success(
-                request, 'An error has occurred!')
-    
-    return redirect('home')
+    return render(
+        request,
+        "neighbourhoods/home.html",
+        {
+            "posts": posts,
+            "health_contacts": contacts.filter(category="health"),
+            "security_contacts": contacts.filter(category="security"),
+            "form": form,
+            "neighbourhood": neighbourhood,
+        },
+    )
 
-@login_required(login_url='login')
-def addBusiness(request):
-    if request.method == 'POST':
+
+@login_required
+def business_list(request):
+    neighbourhood = _neighbourhood(request.user)
+    form = BusinessForm()
+
+    if request.method == "POST":
+        if neighbourhood is None:
+            messages.error(request, "Choose a neighbourhood on your profile before adding a business.")
+            return redirect("profile")
         form = BusinessForm(request.POST)
         if form.is_valid():
-                business = form.save(commit=False)
-                business.owner = request.user
-                business.neighbourhood = request.user.profile.neighbourhood
-                business.save()
+            business = form.save(commit=False)
+            business.owner = request.user
+            business.neighbourhood = neighbourhood
+            business.save()
+            messages.success(request, "Business added.")
+            return redirect("business-list")
 
-                messages.success(request, 'Business added successfully!')
+    businesses = Business.objects.none()
+    if neighbourhood is not None:
+        businesses = Business.objects.filter(neighbourhood=neighbourhood).select_related("owner__profile")
 
-        else:
-            messages.success(
-                request, 'An error has occurred!')
-    
-    return redirect('business-list')
+    return render(
+        request,
+        "neighbourhoods/business-list.html",
+        {
+            "form": form,
+            "businesses": businesses,
+            "neighbourhood": neighbourhood,
+        },
+    )
+
+
+@login_required
+def neighbourhood_list(request):
+    neighbourhood = _neighbourhood(request.user)
+    neighbourhood_form = NeighbourhoodForm(prefix="area")
+    contact_form = ContactForm(prefix="contact")
+
+    if request.method == "POST" and request.POST.get("action") == "neighbourhood":
+        neighbourhood_form = NeighbourhoodForm(request.POST, prefix="area")
+        if neighbourhood_form.is_valid():
+            created = neighbourhood_form.save(commit=False)
+            created.owner = request.user
+            created.save()
+            messages.success(request, "Neighbourhood added. Join it from your profile.")
+            return redirect("neighbourhood-list")
+
+    if request.method == "POST" and request.POST.get("action") == "contact":
+        if neighbourhood is None:
+            messages.error(request, "Choose a neighbourhood on your profile before adding a contact.")
+            return redirect("profile")
+        contact_form = ContactForm(request.POST, prefix="contact")
+        if contact_form.is_valid():
+            contact = contact_form.save(commit=False)
+            contact.neighbourhood = neighbourhood
+            contact.save()
+            messages.success(request, "Contact added.")
+            return redirect("neighbourhood-list")
+
+    neighbourhoods = (
+        Neighbourhood.objects.select_related("owner")
+        .annotate(resident_count=Count("profile"))
+        .order_by("name")
+    )
+    return render(
+        request,
+        "neighbourhoods/neighbourhood-list.html",
+        {
+            "neighbourhoods": neighbourhoods,
+            "neighbourhood_form": neighbourhood_form,
+            "contact_form": contact_form,
+            "neighbourhood": neighbourhood,
+        },
+    )

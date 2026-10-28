@@ -1,0 +1,19 @@
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="{% url 'home' %}">
+      <span class="brand-mark">Mtaani</span>
+      <span class="brand-place">{{ user.profile.neighbourhood|default:"No neighbourhood yet" }}</span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="{% url 'home' %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>Feed</a>
+      <a href="{% url 'business-list' %}" {% if request.resolver_match.url_name == 'business-list' %}aria-current="page"{% endif %}>Businesses</a>
+      <a href="{% url 'neighbourhood-list' %}" {% if request.resolver_match.url_name == 'neighbourhood-list' %}aria-current="page"{% endif %}>Neighbourhoods</a>
+      <a href="{% url 'users' %}" {% if request.resolver_match.url_name == 'users' %}aria-current="page"{% endif %}>Residents</a>
+      <a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}aria-current="page"{% endif %}>Profile</a>
+    </nav>
+    <form class="logout" method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit">Log out</button>
+    </form>
+  </div>
+</header>

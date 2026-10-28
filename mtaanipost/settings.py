@@ -153,9 +153,9 @@ TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
+
+LOGIN_URL = "login"
 
 # Email configurations 
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
