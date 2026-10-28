@@ -1,61 +1,39 @@
-# Mtaani post Web Application
+# Mtaani Post
 
-#### By **Patrick Mwangangi**
+Django app for a neighbourhood: residents, posts, contacts, and businesses. I built it in 2021 while learning Django. It is the public sample for the Django and PostgreSQL line on my profile. The court-data pipelines are a different job and stay in the client repository.
 
-## Description
+A test creates a user, a neighbourhood, and one announcement, and checks that the post is stored on that neighbourhood. Signup also creates a profile and a welcome email.
 
-This a nifty application created to serve as a platform where interested neighbourhoods can share news, announcements that affect their residents.
+## Run the test
 
-Further to the above usage, this master piece was created as practice on concepts learnt in Python Django (at Moringa School).
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python manage.py test
+```
 
-## Demo
+The test uses SQLite. No `.env` file is required.
 
-Here is a working live demo : https://mtaanipost.herokuapp.com/
+## PostgreSQL
 
-## Setup/Installaction Requirements
+Set these when you want the database the app was written for:
 
-- Clone the repository (repo).
-  ```
-  git clone https://github.com/kiman121/mtaani-post.git
-  ```
-- Open the project on VS Code or any editor of choice.
-- Navigate to the projects root directory.
-- Open the virtual environment by running the `source virtual/bin/activate` command.
-- Install the required packages: `pip install -r requirements.txt`
-- Create a .env file and add the following data instances
-  ```
-  SECRET_KEY=<'your secret key'>
-  DEBUG=True
-  DB_NAME=<'database_name'>
-  DB_USER=<'postgres_user'>
-  DB_PASSWORD=<'postgres_password'>
-  DB_HOST='127.0.0.1'
-  MODE='dev'
-  ALLOWED_HOSTS='.localhost', '.herokuapp.com', '.127.0.0.1'
-  DISABLE_COLLECTSTATIC=1
-  ```
-- Run migrations to update the changes to db: `python3.9 manage.py migrate`
-- Run the development server: `python3.9 manage.py runserver`
-- open this url on your browser "http://127.0.0.1:5000/"
+```
+SECRET_KEY=change-me
+DEBUG=True
+MODE=dev
+DB_NAME=mtaani
+DB_USER=postgres
+DB_PASSWORD=
+DB_HOST=127.0.0.1
+ALLOWED_HOSTS=localhost,127.0.0.1
+```
 
-## Known Bugs
+Then install the Postgres driver and start the app:
 
-No Known bugs
-
-## Technology Used
-
-- HTML
-- CSS
-- Javascript
-- Bootstrap
-- Python
-- Django
-
-## Support and contact details
-
-If you want to contact us, email us on info@mtaani-post.com
-
-### License
-
-[MIT licence](https://github.com/kiman121/mtaani-post/blob/master/LICENCE)
-Copyright (c) 2021
+```bash
+pip install psycopg2-binary
+python manage.py migrate
+python manage.py runserver
+```
