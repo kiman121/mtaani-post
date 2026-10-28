@@ -5,8 +5,8 @@
   <header class="page-head">
     <div>
       <p class="eyebrow">Residents</p>
-      <h1>People with an account</h1>
-      <p class="lede">Names, neighbourhoods, and how to reach them.</p>
+      <h1>{% if neighbourhood %}{{ neighbourhood.name }}{% else %}Residents{% endif %}</h1>
+      <p class="lede">People in your neighbourhood, and how to reach them.</p>
     </div>
   </header>
 
@@ -20,13 +20,13 @@
       {% endif %}
       <div>
         <h2>{{ person.first_name|default:person.username }} {{ person.other_name|default:"" }}</h2>
-        <p class="meta">{{ person.neighbourhood|default:"No neighbourhood" }} · {{ person.get_user_type_display }}</p>
+        <p class="meta">{{ person.neighbourhood|default:"No neighbourhood" }}</p>
         {% if person.email %}<p><a href="mailto:{{ person.email }}">{{ person.email }}</a></p>{% endif %}
         {% if person.phone_number %}<p><a href="tel:{{ person.phone_number }}">{{ person.phone_number }}</a></p>{% endif %}
       </div>
     </article>
     {% empty %}
-    <p class="empty">No residents yet.</p>
+    <p class="empty">{% if neighbourhood %}No residents yet.{% else %}Choose a neighbourhood on your profile to see its residents.{% endif %}</p>
     {% endfor %}
   </div>
 </div>

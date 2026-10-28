@@ -6,7 +6,7 @@
     <div>
       <p class="eyebrow">Neighbourhoods</p>
       <h1>Places on Mtaani</h1>
-      <p class="lede">Add a neighbourhood, then join it from your profile. Contacts are saved to the one you have joined.</p>
+      <p class="lede">Add a neighbourhood. If you are not in one yet, it becomes yours and opens the feed.</p>
     </div>
   </header>
 
@@ -21,6 +21,9 @@
           {% if area.owner %} · Added by {{ area.owner.username }}{% endif %}
           · {{ area.created|date:"j M Y" }}
         </p>
+        {% if user.is_authenticated and area.owner_id == user.id %}
+        <p class="card-actions"><a href="{% url 'edit-neighbourhood' area.id %}">Edit</a></p>
+        {% endif %}
       </article>
       {% empty %}
       <p class="empty">No neighbourhoods yet. Add the first one.</p>

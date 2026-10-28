@@ -6,4 +6,7 @@
     {% if contact.phone_number and contact.email %} · {% endif %}
     {% if contact.email %}<a href="mailto:{{ contact.email }}">{{ contact.email }}</a>{% endif %}
   </p>
+  {% if user.is_authenticated and user.profile.neighbourhood_id == contact.neighbourhood_id %}
+  <p class="card-actions"><a href="{% url 'edit-contact' contact.id %}">Edit</a></p>
+  {% endif %}
 </article>

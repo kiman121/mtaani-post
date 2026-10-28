@@ -73,14 +73,21 @@ class PostForm(ModelForm):
 class BusinessForm(ModelForm):
     class Meta:
         model = Business
-        fields = ("name", "email")
+        fields = ("name", "description", "phone_number", "email")
         labels = {
             "name": "Name",
+            "description": "What they offer",
+            "phone_number": "Phone",
             "email": "Email",
+        }
+        widgets = {
+            "description": Textarea(attrs={"rows": 3, "class": "field"}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].required = True
+        self.fields["description"].required = True
+        self.fields["phone_number"].widget.attrs["autocomplete"] = "tel"
         self.fields["email"].widget.attrs["autocomplete"] = "email"
         style_fields(self)

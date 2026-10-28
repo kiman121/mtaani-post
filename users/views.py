@@ -76,5 +76,12 @@ def profile(request):
 
 @login_required
 def residents(request):
-    profiles = Profile.objects.select_related("neighbourhood").all()
-    return render(request, "users/users.html", {"profiles": profiles})
+    neighbourhood = request.user.profile.neighbourhood
+    profiles = Profile.objects.none()
+    if neighbourhood is not None:
+        profiles = Profile.objects.filter(neighbourhood=neighbourhood).select_related("neighbourhood")
+    return render(
+        request,
+        "users/users.html",
+        {"profiles": profiles, "neighbourhood": neighbourhood},
+    )

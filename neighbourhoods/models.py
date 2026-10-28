@@ -11,6 +11,7 @@ class Neighbourhood(models.Model):
     name = models.CharField(max_length=200, blank=True, null=True)
     location = models.CharField(max_length=200, blank=True, null=True)
     occupants_count = models.IntegerField(default=0, null=True, blank=True)
+    is_sample = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)
@@ -63,6 +64,8 @@ class Business(models.Model):
         User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, blank=True, null=True)
     email = models.EmailField(max_length=500, blank=True, null=True)
+    phone_number = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True,
                           primary_key=True, editable=False)

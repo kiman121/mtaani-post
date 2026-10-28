@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ eyebrow }} · Mtaani{% endblock %}
+{% block content %}
+<div class="page narrow">
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">{{ eyebrow }}</p>
+      <h1>{{ heading }}</h1>
+    </div>
+  </header>
+  <form class="panel" method="post">
+    {% csrf_token %}
+    {% include "includes/fields.html" %}
+    <button class="button" type="submit">Save</button>
+  </form>
+  {% if can_delete %}
+  <form class="remove" method="post" action="{{ delete_url }}">
+    {% csrf_token %}
+    <button class="button danger" type="submit">Remove</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

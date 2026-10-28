@@ -7,7 +7,9 @@
       <p class="eyebrow">Feed</p>
       <h1>{% if neighbourhood %}{{ neighbourhood.name }}{% else %}Your feed{% endif %}</h1>
       <p class="lede">
-        {% if neighbourhood %}
+        {% if read_only %}
+        A sample neighbourhood you can read without an account.
+        {% elif neighbourhood %}
         Notices and contacts for {{ neighbourhood.location }}.
         {% else %}
         Choose a neighbourhood on your profile to see its notices.
@@ -16,13 +18,15 @@
     </div>
   </header>
 
-  {% if not neighbourhood %}
+  {% if read_only %}
+  <p class="banner">This feed is a sample. <a href="{% url 'login' %}">Sign in</a> to post in your own neighbourhood.</p>
+  {% elif not neighbourhood %}
   <p class="banner">You are not in a neighbourhood yet. <a href="{% url 'profile' %}">Choose one on your profile</a>.</p>
   {% endif %}
 
   <div class="split">
     <section class="stack" aria-labelledby="notices-title">
-      {% if neighbourhood %}
+      {% if neighbourhood and not read_only %}
       <form class="panel" method="post" action="{% url 'home' %}">
         {% csrf_token %}
         <h2>Write a notice</h2>
@@ -41,6 +45,9 @@
           <p class="meta">
             {% if post.owner %}{{ post.owner.profile.first_name|default:post.owner.username }} · {% endif %}{{ post.created|date:"j M Y" }}
           </p>
+          {% if user.is_authenticated and post.owner_id == user.id %}
+          <p class="card-actions"><a href="{% url 'edit-post' post.id %}">Edit</a></p>
+          {% endif %}
         </article>
         {% empty %}
         <p class="empty">No notices in this neighbourhood yet.</p>

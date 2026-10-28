@@ -97,7 +97,8 @@ a { color: var(--grove); }
 
 .nav a[aria-current="page"] { border-bottom-color: var(--clay); }
 
-.logout button {
+.logout button,
+.sign-in {
   background: transparent;
   color: var(--cream);
   border: 1px solid rgba(246, 241, 232, 0.35);
@@ -106,6 +107,7 @@ a { color: var(--grove); }
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
 }
 
 @media (max-width: 760px) {
@@ -117,7 +119,8 @@ a { color: var(--grove); }
 
   .brand { grid-column: 1; grid-row: 1; margin-right: 0; }
 
-  .logout { grid-column: 2; grid-row: 1; justify-self: end; }
+  .logout,
+  .sign-in { grid-column: 2; grid-row: 1; justify-self: end; }
 
   .nav {
     grid-column: 1 / -1;
@@ -236,6 +239,19 @@ textarea.field { min-height: 7rem; resize: vertical; }
 }
 
 .button:hover { background: var(--leaf); }
+
+.button.danger {
+  background: transparent;
+  color: var(--clay);
+  border: 1px solid var(--clay);
+  margin-top: 0.8rem;
+}
+
+.button.danger:hover { background: var(--warn); }
+
+.card-actions { margin-top: 0.75rem; }
+
+.card-actions a { font-size: 0.85rem; font-weight: 700; }
 
 .avatar, .portrait {
   width: 2.7rem;

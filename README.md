@@ -14,7 +14,7 @@ python manage.py test
 python manage.py runserver
 ```
 
-Open http://127.0.0.1:8000, create an account, add a neighbourhood, then join it from your profile. The test uses SQLite. No `.env` file is required. The old Heroku address no longer serves this app.
+Open http://127.0.0.1:8000. The first screen is a sample neighbourhood anyone can read. Sign in to post, edit, or remove records in your own neighbourhood. Adding a neighbourhood joins it when you are not in one yet. The test uses SQLite. No `.env` file is required. The old Heroku address no longer serves this app.
 
 ## PostgreSQL
 

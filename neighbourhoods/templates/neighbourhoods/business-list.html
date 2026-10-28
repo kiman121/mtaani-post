@@ -6,11 +6,15 @@
     <div>
       <p class="eyebrow">Businesses</p>
       <h1>{% if neighbourhood %}{{ neighbourhood.name }}{% else %}Businesses{% endif %}</h1>
-      <p class="lede">Places people in your neighbourhood have listed.</p>
+      <p class="lede">
+        {% if read_only %}Places listed in the sample neighbourhood.{% else %}Places people in your neighbourhood have listed.{% endif %}
+      </p>
     </div>
   </header>
 
-  {% if not neighbourhood %}
+  {% if read_only %}
+  <p class="banner">Sign in to list a business in your own neighbourhood.</p>
+  {% elif not neighbourhood %}
   <p class="banner">You are not in a neighbourhood yet. <a href="{% url 'profile' %}">Choose one on your profile</a>.</p>
   {% else %}
   <form class="panel" method="post" action="{% url 'business-list' %}">
@@ -25,10 +29,18 @@
     {% for business in businesses %}
     <article class="card">
       <h2>{{ business.name }}</h2>
-      {% if business.email %}<p><a href="mailto:{{ business.email }}">{{ business.email }}</a></p>{% endif %}
+      {% if business.description %}<p>{{ business.description }}</p>{% endif %}
+      <p class="meta">
+        {% if business.phone_number %}<a href="tel:{{ business.phone_number }}">{{ business.phone_number }}</a>{% endif %}
+        {% if business.phone_number and business.email %} · {% endif %}
+        {% if business.email %}<a href="mailto:{{ business.email }}">{{ business.email }}</a>{% endif %}
+      </p>
       <p class="meta">
         {% if business.owner %}Listed by {{ business.owner.profile.first_name|default:business.owner.username }} · {% endif %}{{ business.created|date:"j M Y" }}
       </p>
+      {% if user.is_authenticated and user.profile.neighbourhood_id == business.neighbourhood_id %}
+      <p class="card-actions"><a href="{% url 'edit-business' business.id %}">Edit</a></p>
+      {% endif %}
     </article>
     {% empty %}
     <p class="empty">No businesses listed yet.</p>
